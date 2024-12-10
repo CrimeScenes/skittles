@@ -1,4 +1,4 @@
-if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
+if shared.Global.Memory.Settings.IsPrecisionActive == true then
     local Memory
     
     game:GetService("RunService").RenderStepped:Connect(function()
@@ -32,8 +32,8 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     task.spawn(function()
     while task.wait(1) do
-       local minMemory = shared.Nocturne.Memory.Configuration.Start
-       local maxMemory = shared.Nocturne.Memory.Configuration.End
+       local minMemory = shared.Global.Memory.Configuration.Start
+       local maxMemory = shared.Global.Memory.Configuration.End
        Memory = tostring(math.random(minMemory, maxMemory)) .. "." .. tostring(math.random(10, 99))
     end
     end)
@@ -61,7 +61,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     local lastPositions = {}
     local predictionFactor = 0.2  
     
-    local config = shared.Nocturne.TriggerBot
+    local config = shared.Global.TriggerBot
     local CooldownTime = config.CooldownTime
     local TriggerKey = config.TriggerKey
     local enableLegitMode = config.ShotControl.EnableLegitMode
@@ -83,8 +83,8 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     local function isWithinViewEra(position)
         local screenPos = Camera:WorldToViewportPoint(position)
         local screenCenter = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-        local fovHeight = shared.Nocturne.ViewEra.Vertical * 100
-        local fovWidth = shared.Nocturne.ViewEra.Horizontal * 100
+        local fovHeight = shared.Global.ViewEra.Vertical * 100
+        local fovWidth = shared.Global.ViewEra.Horizontal * 100
         return (Vector2.new(screenPos.X, screenPos.Y) - screenCenter).Magnitude <= math.sqrt((fovHeight / 2)^2 + (fovWidth / 2)^2)
     end
     
@@ -272,7 +272,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     local Camera = game.Workspace.CurrentCamera
     
     
-    local AssistReach = shared.Nocturne.PointAssist.AssistReach
+    local AssistReach = shared.Global.PointAssist.AssistReach
     
     local function UpdateFOV()
         
@@ -325,8 +325,8 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
         local key = Key:lower()
         
         
-        if key == shared.Nocturne.ToggleKey:lower() then
-            if shared.Nocturne.PointAssist.IsPrecisionActive then
+        if key == shared.Global.ToggleKey:lower() then
+            if shared.Global.PointAssist.IsPrecisionActive then
                 if IsTargeting then
                     if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChildOfClass("Humanoid").Health >= 1 then
                         if ClosestPlrFromMouse() == TargetPlayer then
@@ -349,7 +349,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
         end
         
         
-        if key == shared.Nocturne.CancelKey:lower() then
+        if key == shared.Global.CancelKey:lower() then
             IsTargeting = false
             TargetPlayer = nil
         end
@@ -410,31 +410,31 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
                     AssistReach.AssistReachX^2 + AssistReach.AssistReachY^2 + AssistReach.AssistReachZ^2
                 ) then
                     local predictedPosition
-                    if shared.Nocturne.PointAssist.Resolver then
+                    if shared.Global.PointAssist.Resolver then
                         local humanoid = TargetPlayer.Character:FindFirstChildOfClass("Humanoid")
                         if humanoid then
                             local moveDirection = humanoid.MoveDirection
                             predictedPosition = bodyPart.Position + (moveDirection * Vector3.new(
-                                shared.Nocturne.PointAssist.Compensation.CompensationX,
-                                shared.Nocturne.PointAssist.Compensation.CompensationY,
-                                shared.Nocturne.PointAssist.Compensation.CompensationZ
+                                shared.Global.PointAssist.Compensation.CompensationX,
+                                shared.Global.PointAssist.Compensation.CompensationY,
+                                shared.Global.PointAssist.Compensation.CompensationZ
                             ))
                         end
                     else
                         local targetVelocity = TargetPlayer.Character.HumanoidRootPart.Velocity
                         predictedPosition = bodyPart.Position + (targetVelocity * Vector3.new(
-                            shared.Nocturne.PointAssist.Compensation.CompensationX,
-                            shared.Nocturne.PointAssist.Compensation.CompensationY,
-                            shared.Nocturne.PointAssist.Compensation.CompensationZ
+                            shared.Global.PointAssist.Compensation.CompensationX,
+                            shared.Global.PointAssist.Compensation.CompensationY,
+                            shared.Global.PointAssist.Compensation.CompensationZ
                         ))
                     end
     
                     if predictedPosition then
                         local DesiredCFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
-                        Camera.CFrame = Camera.CFrame:Lerp(DesiredCFrame, shared.Nocturne.PointAssist.AssistStabilization)
+                        Camera.CFrame = Camera.CFrame:Lerp(DesiredCFrame, shared.Global.PointAssist.AssistStabilization)
                     end
     
-                    if shared.Nocturne['Silent Targeting'].IsAssistActive and IsTargeting and TargetPlayer.Character:FindFirstChild("Humanoid") then
+                    if shared.Global['Silent Targeting'].IsAssistActive and IsTargeting and TargetPlayer.Character:FindFirstChild("Humanoid") then
                         local closestPoint = bodyPart.Position  
     
                         local success, velocity = pcall(function()
@@ -443,9 +443,9 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
                         if success and velocity then
                             Replicated_Storage[RemoteEvent]:FireServer(Argument, closestPoint + velocity * Vector3.new(
-                                shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftX, 
-                                shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftY, 
-                                shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftZ
+                                shared.Global['Silent Targeting'].TimeAlteration.TimeShiftX, 
+                                shared.Global['Silent Targeting'].TimeAlteration.TimeShiftY, 
+                                shared.Global['Silent Targeting'].TimeAlteration.TimeShiftZ
                             ))
                         end
                     end
@@ -765,7 +765,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     
     local function updateFov()
-        local settings = shared.Nocturne['Silent Targeting'].TargetingRange
+        local settings = shared.Global['Silent Targeting'].TargetingRange
         clearFovParts()
     
         
@@ -817,14 +817,14 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     
     local function isPartInFovAndVisible(part)
-        if not shared.Nocturne.PointAssist.IsPrecisionActive or not IsTargeting or not TargetPlayer then
+        if not shared.Global.PointAssist.IsPrecisionActive or not IsTargeting or not TargetPlayer then
             return false
         end
     
         
-        local dynamicFovSize = calculateFov(shared.Nocturne['Silent Targeting'].TargetingRange.BoundaryX, 
-                                             shared.Nocturne['Silent Targeting'].TargetingRange.BoundaryY, 
-                                             shared.Nocturne['Silent Targeting'].TargetingRange.BoundaryZ)
+        local dynamicFovSize = calculateFov(shared.Global['Silent Targeting'].TargetingRange.BoundaryX, 
+                                             shared.Global['Silent Targeting'].TargetingRange.BoundaryY, 
+                                             shared.Global['Silent Targeting'].TargetingRange.BoundaryZ)
         
         local screenPoint, onScreen = Current_Camera:WorldToScreenPoint(part.Position)
         local distance = (V2(screenPoint.X, screenPoint.Y) - V2(Mouse.X, Mouse.Y)).Magnitude
@@ -833,7 +833,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     
     local function isPartVisible(part)
-        if not shared.Nocturne['Silent Targeting'].WallCheck then 
+        if not shared.Global['Silent Targeting'].WallCheck then 
             return true
         end
         local origin = Current_Camera.CFrame.Position
@@ -877,16 +877,16 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     
     
-    local OldTimeAlteration = shared.Nocturne['Silent Targeting'].TimeAlteration
+    local OldTimeAlteration = shared.Global['Silent Targeting'].TimeAlteration
 
     local function GetVelocity(player, part)
         if player and player.Character then
             local velocity = player.Character[part].Velocity
             
             -- Using updated names: TimeShiftX, TimeShiftY, TimeShiftZ
-            local distortionX = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftX
-            local distortionY = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftY
-            local distortionZ = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftZ
+            local distortionX = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftX
+            local distortionY = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftY
+            local distortionZ = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftZ
             
             local adjustedVelocity = Vector3.new(
                 velocity.X * distortionX,
@@ -894,13 +894,13 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
                 velocity.Z * distortionZ
             )
             
-            if adjustedVelocity.Y < -30 and shared.Nocturne['Silent Targeting'].Resolver then
-                shared.Nocturne['Silent Targeting'].TimeAlteration = { TimeShiftX = 0, TimeShiftY = 0, TimeShiftZ = 0 }
+            if adjustedVelocity.Y < -30 and shared.Global['Silent Targeting'].Resolver then
+                shared.Global['Silent Targeting'].TimeAlteration = { TimeShiftX = 0, TimeShiftY = 0, TimeShiftZ = 0 }
                 return adjustedVelocity
-            elseif adjustedVelocity.Magnitude > 50 and shared.Nocturne['Silent Targeting'].Resolver then
+            elseif adjustedVelocity.Magnitude > 50 and shared.Global['Silent Targeting'].Resolver then
                 return player.Character:FindFirstChild("Humanoid").MoveDirection * 16 * distortionX
             else
-                shared.Nocturne['Silent Targeting'].TimeAlteration = OldTimeAlteration
+                shared.Global['Silent Targeting'].TimeAlteration = OldTimeAlteration
                 return adjustedVelocity
             end
         end
@@ -924,7 +924,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     
     UserInputService.InputEnded:Connect(function(input, isProcessed)
-    if input.KeyCode == Enum.KeyCode[shared.Nocturne.ToggleKey:upper()] and shared.Nocturne.PointAssist.Method == "hold" then
+    if input.KeyCode == Enum.KeyCode[shared.Global.ToggleKey:upper()] and shared.Global.PointAssist.Method == "hold" then
     holdingMouseButton = false
     end
     end)
@@ -975,7 +975,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
             end)
         end
     
-        if shared.Nocturne['Silent Targeting'].IsPrecisionActive and IsTargeting then
+        if shared.Global['Silent Targeting'].IsPrecisionActive and IsTargeting then
             if TargetPlayer then
                 if TargetPlayer.Character then
                     local targetPos = TargetPlayer.Character.Head.Position
@@ -1013,9 +1013,9 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
                     if success3 and closestPart and closestPoint then
                         local velocity = GetVelocity(TargetPlayer, closestPart.Name)
     
-                        local TimeAlterationX = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftX
-                        local TimeAlterationY = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftY
-                        local TimeAlterationZ = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftZ
+                        local TimeAlterationX = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftX
+                        local TimeAlterationY = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftY
+                        local TimeAlterationZ = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftZ
                         
                         local adjustedVelocity = velocity * Vector3.new(TimeAlterationX, TimeAlterationY, TimeAlterationZ)
     
@@ -1044,7 +1044,7 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
     
     task.spawn(function()
         while task.wait(0.1) do
-            if shared.Nocturne['Silent Targeting'].IsPrecisionActive then
+            if shared.Global['Silent Targeting'].IsPrecisionActive then
              
             end
         end
@@ -1078,9 +1078,9 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
                             end)
     
                             if success3 and velocity then
-                                local TimeAlterationX = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftX
-                                local TimeAlterationY = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftY
-                                local TimeAlterationZ = shared.Nocturne['Silent Targeting'].TimeAlteration.TimeShiftZ
+                                local TimeAlterationX = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftX
+                                local TimeAlterationY = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftY
+                                local TimeAlterationZ = shared.Global['Silent Targeting'].TimeAlteration.TimeShiftZ
                                 
                                 local adjustedVelocity = velocity * Vector3.new(TimeAlterationX, TimeAlterationY, TimeAlterationZ)
                                 
@@ -1123,9 +1123,6 @@ if shared.Nocturne.Memory.Settings.IsPrecisionActive == true then
             onCharacterAdded(Local_Player.Character)
         end)
     end
-    
-
-
 
 
 
