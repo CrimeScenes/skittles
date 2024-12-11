@@ -87,7 +87,7 @@ local function handleSettingsOpened()
     local isToggled = false
     local TargetPlayer = nil
     local lastPositions = {}
-    local predictionFactor = 0.03 
+    local predictionFactor = 0.35
     
     local config = shared.Global.TriggerBot
     local CooldownTime = config.CooldownTime
@@ -169,17 +169,17 @@ local function handleSettingsOpened()
     
            
             if distanceFactor <= 18 then
-                randomX = math.random() * characterSize.X * 0.5 - characterSize.X * 0.15
-                randomY = math.random() * characterSize.Y * 0.5 - characterSize.Y * 0.15
-                randomZ = math.random() * characterSize.Z * 0.5 - characterSize.Z * 0.15
+                randomX = math.random() * characterSize.X * 0.3 - characterSize.X * 0.15
+                randomY = math.random() * characterSize.Y * 0.3 - characterSize.Y * 0.15
+                randomZ = math.random() * characterSize.Z * 0.3 - characterSize.Z * 0.15
             elseif distanceFactor <= 34 then
                 randomX = math.random() * characterSize.X * 0.4 - characterSize.X * 0.2
                 randomY = math.random() * characterSize.Y * 0.4 - characterSize.Y * 0.2
                 randomZ = math.random() * characterSize.Z * 0.4 - characterSize.Z * 0.2
             else
-                randomX = math.random() * characterSize.X * 0.3 - characterSize.X * 0.25
-                randomY = math.random() * characterSize.Y * 0.3 - characterSize.Y * 0.25
-                randomZ = math.random() * characterSize.Z * 0.3 - characterSize.Z * 0.25
+                randomX = math.random() * characterSize.X * 0.5 - characterSize.X * 0.25
+                randomY = math.random() * characterSize.Y * 0.5 - characterSize.Y * 0.25
+                randomZ = math.random() * characterSize.Z * 0.5 - characterSize.Z * 0.25
             end
     
             return characterPos + Vector3.new(randomX, randomY, randomZ)
