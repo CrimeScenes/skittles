@@ -75,7 +75,6 @@ local function handleSettingsOpened()
         
         
         
-        
         local Players = game:GetService("Players")
         local LocalPlayer = Players.LocalPlayer
         local Camera = game:GetService("Workspace").CurrentCamera
@@ -94,15 +93,6 @@ local function handleSettingsOpened()
         local enableLegitMode = config.ShotControl.EnableLegitMode
         local ignoreKnife = config.ShotControl.Protection.IgnoreKnife
         local detectionZone = config.DetectionZone
-        
-        -- Bullet Prediction table to adjust based on distance
-        local bulletPrediction = {
-            [0] = 0.1,  -- Minimal prediction at very close distance
-            [10] = 0.12, -- Close distance with moderate speed
-            [20] = 0.18, -- Moderate prediction for mid-range
-            [50] = 0.25, -- Higher prediction for longer ranges
-            [100] = 0.35 -- Maximum prediction for very long distances
-        }
         
         -- Local hitbox parts to aim at
         local AllBodyParts = {
@@ -171,10 +161,11 @@ local function handleSettingsOpened()
             if humanoidRootPart then
                 local characterSize = humanoidRootPart.Size
                 local characterPos = humanoidRootPart.Position
+        
                 local randomX, randomY, randomZ
                 local distanceFactor = distance
         
-                -- Adjust hitbox size for Da Hood's small, fast characters
+                -- Make the hitbox smaller based on the distance, especially for small characters like in Da Hood
                 if distanceFactor <= 10 then
                     randomX = math.random() * characterSize.X * 0.3 - characterSize.X * 0.15
                     randomY = math.random() * characterSize.Y * 0.3 - characterSize.Y * 0.15
@@ -197,15 +188,26 @@ local function handleSettingsOpened()
         local function predictTargetPosition(targetPlayer, deltaTime)
             local avgPrediction = Vector3.new(0, 0, 0)
         
-            -- Iterate through all body parts for more accurate prediction
+            -- Iterate through all body parts
             local bodyParts = getBodyPartsPosition(targetPlayer.Character)
             for _, part in pairs(bodyParts) do
                 local velocity = part.AssemblyLinearVelocity
                 local distance = (part.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
         
-                -- Dynamic prediction based on distance (bulletPrediction table)
-                local predictionMultiplier = bulletPrediction[math.min(50, math.floor(distance))] or 0.2
-                local predictedPos = part.Position + velocity * deltaTime * predictionMultiplier
+                -- Adjust prediction factor based on distance
+                if distance <= 5 then
+                    predictionFactor = 0.04 -- More precise prediction for closer distances
+                elseif distance <= 15 then
+                    predictionFactor = 0.12
+                elseif distance <= 30 then
+                    predictionFactor = 0.18
+                elseif distance <= 50 then
+                    predictionFactor = 0.2
+                else
+                    predictionFactor = 0.25 -- Larger prediction factor for distant targets
+                end
+        
+                local predictedPos = part.Position + velocity * deltaTime * predictionFactor
         
                 local humanoid = targetPlayer.Character:FindFirstChild("Humanoid")
                 if humanoid then
@@ -215,9 +217,11 @@ local function handleSettingsOpened()
                     end
                 end
         
+                -- Add prediction to total and average it
                 avgPrediction = avgPrediction + predictedPos
             end
         
+            -- Return the average prediction for all body parts
             return avgPrediction / #bodyParts
         end
         
@@ -233,10 +237,10 @@ local function handleSettingsOpened()
         end
         
         local function adjustHitboxSize(distance)
-            -- Adjust hitbox size based on the distance of the target from the player
-            local size = 0.08
+            -- Adjust the hitbox size based on the distance of the target from the player
+            local size = 0.08  -- Start with a smaller size for tight, small hitboxes
             if distance <= 10 then
-                size = 0.1
+                size = 0.1  -- Smallest target hitbox for very close distances
             elseif distance <= 20 then
                 size = 0.15
             elseif distance <= 30 then
@@ -244,7 +248,7 @@ local function handleSettingsOpened()
             elseif distance <= 50 then
                 size = 0.25
             else
-                size = 0.3
+                size = 0.3  -- Larger size for very far targets
             end
             return size
         end
@@ -317,7 +321,6 @@ local function handleSettingsOpened()
                 TriggerBotAction()
             end
         end)
-        
         
 
         
@@ -1236,6 +1239,9 @@ else
     
     handleSettingsOpened()
 end
+
+          
+
 
 
 
